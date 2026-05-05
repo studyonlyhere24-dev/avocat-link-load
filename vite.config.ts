@@ -1,0 +1,28 @@
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import path from "path";
+
+export default defineConfig({
+  plugins: [
+    TanStackRouterVite(),
+    react(),
+    tailwindcss(),
+    tsconfigPaths(),
+  ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  define: {
+    // Map Vercel integration env vars to Vite-compatible names
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+  },
+  build: {
+    outDir: "dist",
+  },
+});
