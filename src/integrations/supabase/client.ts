@@ -2,13 +2,18 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
 function createSupabaseClient() {
-  // Vite exposes env vars via import.meta.env.VITE_*
-  // The vite.config.ts maps Vercel's SUPABASE_URL/SUPABASE_ANON_KEY to these
-  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-  const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+  // Vite automatically exposes environment variables with VITE_ prefix via import.meta.env
+  // For local development: use .env with VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
+  // For Vercel: set SUPABASE_URL and SUPABASE_ANON_KEY in project settings, then add build scripts to set VITE_ vars
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+  const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-  if (!SUPABASE_URL || SUPABASE_URL === 'undefined' || !SUPABASE_ANON_KEY || SUPABASE_ANON_KEY === 'undefined') {
-    console.warn('[Supabase] Environment variables not set. Using placeholder for build.');
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+    console.error(
+      '[Supabase] Environment variables not configured. ' +
+      'Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file for development, ' +
+      'or SUPABASE_URL and SUPABASE_ANON_KEY in Vercel project settings for production.'
+    );
     // Return a placeholder client for build time - will be configured properly at runtime
     return createClient<Database>(
       'https://placeholder.supabase.co',
